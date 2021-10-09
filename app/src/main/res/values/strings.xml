@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">Tiktok Pro Downloader</string>
+    <string name="description">Like Pro</string>
+
+    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_banner_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_interstitial_id" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="admob_rewarded_id" translatable="false">ca-app-pub-3940256099942544/5224354917</string>
+
+    <!-- start home -->
+    <!-- design home from https://www.youtube.com/watch?v=DjXBnu5R9IY&ab_channel=YosiBagus -->
+    <string name="open_tiktok_web">Open Tiktok\nWeb?</string>
+    <string name="click_here">Click here</string>
+    <string name="downloader">Downloader</string>
+    <string name="video">Video</string>
+    <string name="watch_video">Watch Video</string>
+    <string name="download">Download</string>
+    <string name="video_and_music">Video and Music</string>
+    <string name="music">Music</string>
+    <string name="listen_music">Listen Music</string>
+    <string name="settings">Settings</string>
+    <string name="about_apps">About Apps</string>
+    <!-- end home -->
+
+    <string name="paste_url">Paste Url here…</string>
+    <string name="title_permission_needed">Permission needed</string>
+    <string name="text_why_permission">This permission is needed to save your videos and musics on your smartphone</string>
+    <string name="cancel">Cancel</string>
+    <string name="oke">Oke</string>
+    <string name="notif_permission_denied">Storage permission is required.\nSee app parameters to enable Storage permission.</string>
+    <string name="download_video">Download Video</string>
+    <string name="download_music">Download Music</string>
+    <string name="close">Close</string>
+    <string name="notif_need_permission">needs following permissions to continue</string>
+    <string name="allow">Allow</string>
+    <string name="please_allow">Please allow following permissions in settings</string>
+    <string name="permissions_are_denied">The following permissions are denied：</string>
+    <string name="your_video_from_tiktok">Your video from Tiktok</string>
+    <string name="share_video_use">Share Video using</string>
+    <string name="cannot_open">Nothing apps to open this video</string>
+    <string name="your_music_from_tiktok">Your music from Tiktok</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="version_value">1.0</string>
+    <string name="website">Website</string>
+    <string name="website_value">wwww.blabla.com</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_value">wwww.blabla.com/privacy-policy.html</string>
+    <string name="author">Author</string>
+    <string name="author_name">AmelDev</string>
+    <string name="email">Email</string>
+    <string name="email_value">blabla@blabla.com</string>
+    <string name="more">More…</string>
+    <string name="status_app">Status App</string>
+    <string name="status_app_value">Working</string>
+    <string name="share_this_app">Share this app</string>
+    <string name="rate_this_app">Rate this app</string>
+    <string name="report_error">Report Error</string>
+    <string name="video_not_found">Video not found</string>
+    <string name="music_not_found">Music not found</string>
+    <string name="tiktok_app_not_available">Tiktok App Not Available.</string>
+    <string name="download_canceled">Download canceled</string>
+    <string name="error_code">Error Code</string>
+    <string name="share_app_message">Download Videos and Music from Tiktok without watermark easily</string>
+    <string name="under_dev">Under development, coming soon…</string>
+</resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "348431525877",
+    "project_id": "tiktok-pro-downloader",
+    "storage_bucket": "tiktok-pro-downloader.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:348431525877:android:263afbcc7dd4c0eb7562bc",
+        "android_client_info": {
+          "package_name": "com.ameldev.tiktokprodownloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "348431525877-n7nogm9kciksmfoavj4c9fvqtvfr2g2m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ameldev.tiktokprodownloader",
+            "certificate_hash": "ee59f1cc5df3ebc089523465d8443eec9f10b417"
+          }
+        },
+        {
+          "client_id": "348431525877-3qgooh42bludgm0b1usbh5huphmuokb1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDV_2bXsIQsvuXUHYNpsp1cq6ZFZZOyIw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "348431525877-3qgooh42bludgm0b1usbh5huphmuokb1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
