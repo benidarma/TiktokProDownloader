@@ -1,7 +1,6 @@
 package com.ameldev.tiktokprodownloader.activities;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -33,11 +32,10 @@ import com.ameldev.tiktokprodownloader.utils.Keys;
 import com.github.abdularis.buttonprogress.DownloadButtonProgress;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.jaeger.library.StatusBarUtil;
 
 import java.util.Objects;
@@ -59,20 +57,20 @@ public class DownloadActivity extends AppCompatActivity {
     private CommonClassForAPI commonClassForAPI;
 
     private boolean cancelAction = false;
-    private boolean noAction = false;
-    private boolean adsAction = false;
-    private boolean adsClose = false;
-    private boolean adsReward = false;
-    private boolean adsShowError = false;
-    private boolean adsOpen = false;
+    private boolean actionClick = false;
+    private boolean adsFailedToLoad = false;
+    private boolean adsShowFinish = false;
 
-    private RewardedAd rewardedAd;
+    private InterstitialAd interstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_download);
         StatusBarUtil.setColor(this, ContextCompat.getColor(this, R.color.white), 0);
+
+        // ads
+        loadAd();
 
         // hide toolbar
         Objects.requireNonNull(getSupportActionBar()).hide();
@@ -124,7 +122,6 @@ public class DownloadActivity extends AppCompatActivity {
 
                     binding.buttonProgress2.setIndeterminate();
 
-                    adsAction = true;
                     processDownloadWithAds();
 
                 } else {
@@ -146,9 +143,6 @@ public class DownloadActivity extends AppCompatActivity {
                 // called when finish button/icon is clicked
             }
         });
-
-        // ads
-        buildRewardedAd();
     }
 
     private void processDownloadEnd() {
@@ -161,88 +155,99 @@ public class DownloadActivity extends AppCompatActivity {
         }
     }
 
-    private void processDownloadWithAds() {
-        if (rewardedAd.isLoaded()) {
-            Activity activityContext = DownloadActivity.this;
-            RewardedAdCallback adCallback = new RewardedAdCallback() {
-                @Override
-                public void onRewardedAdOpened() {
-                    // Ad opened.
-                    adsOpen = true;
-                }
+    public void loadAd() {
+        if (interstitialAd == null) {
+            AdRequest adRequest = new AdRequest.Builder().build();
+            InterstitialAd.load(
+                    this,
+                    getString(R.string.admob_interstitial_video_id),
+                    adRequest,
+                    new InterstitialAdLoadCallback() {
+                        @Override
+                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                            // The mInterstitialAd reference will be null until an ad is loaded.
+                            DownloadActivity.this.adsFailedToLoad = false;
+                            DownloadActivity.this.interstitialAd = interstitialAd;
+                            // Log.i(TAG, "onAdLoaded");
+                            // Toast.makeText(DownloadActivity.this, "onAdLoaded()", Toast.LENGTH_SHORT).show();
+                            interstitialAd.setFullScreenContentCallback(
+                                    new FullScreenContentCallback() {
+                                        @Override
+                                        public void onAdDismissedFullScreenContent() {
+                                            // Called when fullscreen content is dismissed.
+                                            // Make sure to set your reference to null so you don't
+                                            // show it a second time.
+                                            DownloadActivity.this.adsShowFinish = true;
+                                            DownloadActivity.this.interstitialAd = null;
+                                            Log.d("TAG", "The ad was dismissed.");
+                                        }
 
-                @Override
-                public void onRewardedAdClosed() {
-                    // Ad closed.
-                    adsClose = true;
-                    buildRewardedAd();
-                }
+                                        @Override
+                                        public void onAdFailedToShowFullScreenContent(AdError adError) {
+                                            // Called when fullscreen content failed to show.
+                                            // Make sure to set your reference to null so you don't
+                                            // show it a second time.
+                                            DownloadActivity.this.adsShowFinish = true;
+                                            DownloadActivity.this.interstitialAd = null;
+                                            Log.d("TAG", "The ad failed to show.");
+                                        }
 
-                @Override
-                public void onUserEarnedReward(@NonNull RewardItem reward) {
-                    // User earned reward.
-                    adsReward = true;
-                }
+                                        @Override
+                                        public void onAdShowedFullScreenContent() {
+                                            // Called when fullscreen content is shown.
+                                            Log.d("TAG", "The ad was shown.");
+                                        }
+                                    });
+                        }
 
-                @Override
-                public void onRewardedAdFailedToShow(AdError adError) {
-                    // Ad failed to display.
-                    adsShowError = true;
-                }
-            };
-            rewardedAd.show(activityContext, adCallback);
-
-            Handler handler = new Handler();
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (adsShowError || adsReward) {
-                        adsShowError = false;
-                        adsReward = false;
-                        adsClose = false;
-                        adsOpen = false;
-                        adsAction = false;
-                        processDownloadEnd();
-                    } else if (adsClose) {
-                        adsShowError = false;
-                        adsReward = false;
-                        adsOpen = false;
-                        adsClose = false;
-                        adsAction = false;
-                        showDialogAdsCanceled(DownloadActivity.this);
-                    } else {
-                        handler.postDelayed(this, 500);
-                    }
-                }
-            };
-            //Start
-            handler.postDelayed(runnable, 500);
-
-        } else {
-            buildRewardedAd();
+                        @Override
+                        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                            // Handle the error
+                            // Log.i(TAG, loadAdError.getMessage());
+                            DownloadActivity.this.adsFailedToLoad = true;
+                            DownloadActivity.this.interstitialAd = null;
+                        }
+                    });
         }
     }
 
-    private void buildRewardedAd() {
-        rewardedAd = new RewardedAd(DownloadActivity.this, getString(R.string.admob_rewarded_id));
-        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+    private void processDownloadWithAds() {
+
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable() {
             @Override
-            public void onRewardedAdLoaded() {
-                // Ad successfully loaded.
-                if (adsAction) {
-                    if (adsOpen)
-                        adsAction = false;
-                    processDownloadWithAds();
+            public void run() {
+                if (!adsFailedToLoad) {
+                    if (interstitialAd == null) {
+                        loadAd();
+                    }
+
+                    if (interstitialAd != null) {
+                        interstitialAd.show(DownloadActivity.this);
+                    } else {
+                        handler.postDelayed(this, 2000);
+                    }
+                } else {
+                    processDownloadEnd();
                 }
             }
+        };
+        //Start
+        handler.postDelayed(runnable, 2000);
 
+        Handler handlerCounter = new Handler();
+        Runnable runnableCounter = new Runnable() {
             @Override
-            public void onRewardedAdFailedToLoad(LoadAdError adError) {
-                // Ad failed to load.
-                processDownloadEnd();
+            public void run() {
+                if (adsShowFinish) {
+                    adsShowFinish = false;
+                    processDownloadEnd();
+                } else {
+                    handlerCounter.postDelayed(this, 1000);
+                }
             }
         };
-        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+        handlerCounter.postDelayed(runnableCounter, 1000);
     }
 
     @SuppressLint("SetTextI18n")
@@ -278,7 +283,7 @@ public class DownloadActivity extends AppCompatActivity {
                     showDialogResultNull(DownloadActivity.this, tiktok);
                 }
 
-                //Log.d("DataMain", tiktok.toString());
+                // Log.d("DataMain", tiktok.toString());
             }
         }
 
@@ -338,16 +343,16 @@ public class DownloadActivity extends AppCompatActivity {
 
         bindingDialog.btnCancel.setOnClickListener(v -> {
             binding.buttonProgress2.setIdle();
-            if (noAction) {
+            if (actionClick) {
                 binding.editQuery.setText("");
-                noAction = false;
+                actionClick = false;
             }
             dialogResultsDownload.cancel();
             dialogResultsDownload.dismiss();
         });
 
         bindingDialog.btnDownVideo.setOnClickListener(v -> {
-            noAction = true;
+            actionClick = true;
             bindingDialog.btnCancel.setText(R.string.close);
             String str = cutTitle(tiktok.getTitle());
             startDownload(tiktok.getUrl(), RootDirectoryVideoDown, activity,
@@ -355,7 +360,7 @@ public class DownloadActivity extends AppCompatActivity {
         });
 
         bindingDialog.btnDownMusic.setOnClickListener(v -> {
-            noAction = true;
+            actionClick = true;
             bindingDialog.btnCancel.setText(R.string.close);
             String str = cutTitle(tiktok.getMusic());
             startDownload(tiktok.getMusicUrl(), RootDirectoryMusicDown, activity,
@@ -379,7 +384,6 @@ public class DownloadActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         activity = this;
-        assert activity != null;
         clipBoard = (ClipboardManager) activity.getSystemService(CLIPBOARD_SERVICE);
         PasteText();
     }
