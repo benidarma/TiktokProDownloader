@@ -69,5 +69,3 @@ Java_com_ameldev_tiktokprodownloader_utils_Keys_getApiURL(
     "code": "200"
 }</code>
 </pre>
-
-<p>Contact me if you have any questions</p>
